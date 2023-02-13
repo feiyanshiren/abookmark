@@ -1,50 +1,37 @@
 import React from 'react'
+import { useState } from 'react'
 import './app.less'
-import logo from '../public/icon.jpg'
-export default class extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = { show: true }
+export default function App(props) {
+
+  const [show, setShow] = useState(false);
+
+  function handleClose() {
+    setShow(!show);
   }
-  handleClose() {
-    this.setState({
-      show: !this.state.show,
-    })
-  }
-  render() {
-    let { show } = this.state
+   
     return (
       <>
         {show ? (
           <div className="Wokoo">
             <header className="Wokoo-header">
-              <img src={logo} className="Wokoo-logo" alt="logo" />
               <span
                 className="Wokoo-close-icon"
-                onClick={this.handleClose.bind(this)}
+                onClick={handleClose}
               >
                 X
               </span>
               <p>
-                Edit <code>App.js</code> and save to reload.
+                Edit 
               </p>
-              <a
-                className="Wokoo-link"
-                href="https://juejin.cn/post/6922815205575491597"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Learn Wokoo
-              </a>
+      
             </header>
           </div>
         ) : (
-          <div className="Wokoo-hide" onClick={this.handleClose.bind(this)}>
-            <img src={logo} className="Wokoo-hide-logo" alt="logo" />
-            open
+          <div className="Wokoo-hide" onClick={handleClose}>
+            书签
           </div>
         )}
       </>
     )
-  }
+  
 }
