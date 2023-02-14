@@ -1,51 +1,40 @@
 import React from 'react'
 import { useState, useEffect, useRef } from 'react'
 import './app.less'
+import { GeistProvider, CssBaseline, Button, Drawer } from '@geist-ui/core'
+import { Bookmark  } from '@geist-ui/icons'
 export default function App(props) {
 
-  const refObject = useRef();
-
-  const [show, setShow] = useState(false);
-
-  useEffect(()=>{
-    document.addEventListener("mousedown", handleClickOutSide);
-    return ()=> document.removeEventListener("mousedown", handleClickOutSide);
-  });
-
-  function handleClickOutSide(e){
-    if(!(refObject?.current?.contains(e.target))){
-      setShow(false);
-    }
-  }
-
-  function handleClose() {
-    setShow(!show);
-  }
+  const [state, setState] = useState(false)
    
     return (
-      <>
-        {show ? (
-          <div className="Book">
-            <header className="Book-header">
-              <span
-                className="Book-close-icon"
-                onClick={handleClose}
+      <GeistProvider>
+        <CssBaseline />
+
+        <div className="Book-hide">
+            <Button
+              ghost auto scale={0.5}
+              icon={<Bookmark  />}
+              onClick={() => setState(true)}
               >
-                X
-              </span>
-              <p>
-                Edit 
-              </p>
-      
-            </header>
-            
-          </div>
-        ) : (
-          <div className="Book-hide" onClick={handleClose}>
-            书签
-          </div>
-        )}
-      </>
+            </Button>
+        </div>
+        <div>
+          <Drawer visible={state} onClose={() => setState(false)} placement="bottom"
+          height={"600px"}
+          >
+          {/* <Drawer.Title>标题</Drawer.Title>
+          <Drawer.Subtitle>子标题</Drawer.Subtitle> */}
+          <Drawer.Content
+          
+          >
+            <p>Geist UI 是我最爱的组件库。</p>
+          </Drawer.Content>
+          </Drawer>
+        </div>
+
+
+      </GeistProvider>
     )
   
 }
