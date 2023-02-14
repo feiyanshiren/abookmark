@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import App from './app'
 
-const wokooApp = document.createElement('div')
-wokooApp.id = 'wokooApp-abookmark-85591'
-document.body.appendChild(wokooApp)
-ReactDOM.render(<App />, wokooApp)
+const bookApp = document.createElement('div')
+bookApp.id = 'bookApp-abookmark-85591'
+document.body.appendChild(bookApp)
+ReactDOM.render(<App />, bookApp)
