@@ -1,125 +1,427 @@
-import React from 'react'
-import { useState} from 'react'  // useEffect, useRef 
-import './index.less'
-import { BookOutlined, SettingOutlined, StarOutlined, MinusOutlined, PlusOutlined, EditOutlined} from '@ant-design/icons'; //PlusSquareOutlined
-import { Button, Drawer, Space, Tree } from 'antd';
+import React from "react";
+import { useState } from "react"; // useEffect, useRef
+import "./index.less";
+import {
+  BookOutlined,
+  SettingOutlined,
+  StarOutlined,
+  MinusOutlined,
+  PlusOutlined,
+  EditOutlined,
+  UploadOutlined,
+  DownloadOutlined,
+} from "@ant-design/icons"; //PlusSquareOutlined
+import { Button, Drawer, Space, Tree, Modal, Input, Popconfirm, Upload} from "antd";
+import {toJSON} from "./components/tools";
 
-export default function BookMark(props){
-    const { DirectoryTree } = Tree;
-    const [state, setState] = useState(false)
-  
-    const onClose = () => {
-      setState(false);
-    };
-  
+export default function BookMark(props) {
+  const { DirectoryTree } = Tree;
+  const [state_Drawer, setState_Drawer] = useState(false);
+  const [openAddFolder, setOpenAddFolder] = useState(false);
+  const [openAddFolder_input, setOpenAddFolder_input] = useState("");
+  const [current_select_key, setCurrent_select_key] = useState("1");
+  const [current_type, setCurrent_type] = useState("add");
+
   //默认一维数组
   const statictreedata = [
     {
-        key: '1',
-        title: 'root',
-        parentId: '0'
+      key: "1",
+      title: "root",
+      parentId: "0",
+      url: "",
     },
     {
-      key: '2',
-      title: '2',
-      parentId: '1',
-      isLeaf: true
-  },
-  ]
-  
-  
+      key: "2",
+      title: "2",
+      parentId: "1",
+      isLeaf: true,
+      url: "",
+    },
+  ];
+
+  const [markData, setMarkData] = useState(statictreedata);
+
+  const drawer_onClose = () => {
+    setState_Drawer(false);
+  };
+
   //一维数组转多维
   function returnTree(arr) {
     function recursionFun(temparr, key) {
-        let tree = []
-        temparr.forEach(item => {
-            if (key === item.parentId){
-                tree.push({
-                    ...item,
-                    children: recursionFun(arr, item.key)
-                })
-            }
-        })
-        return tree
+      let tree = [];
+      temparr.forEach((item) => {
+        if (key === item.parentId) {
+          tree.push({
+            ...item,
+            children: recursionFun(arr, item.key),
+          });
+        }
+      });
+      return tree;
     }
-  
-    return recursionFun(arr, '0')
+
+    return recursionFun(arr, "0");
   }
-  
-    const onSelect = (keys, info) => {
-      console.log('Trigger Select', keys, info);
-    };
-    // const onExpand = (keys, info) => {
-    //   console.log('Trigger Expand', keys, info);
-    // };
-  
-    const [markData, setMarkData] = useState(statictreedata)
-  
-  
-    //自定义treetitle展示
-  function titleRender({ title, key, isLeaf }) {
-    console.log(title, key, isLeaf);
-    return <>
-  
+
+  const onSelect = (keys, info) => {
+    // console.log('Trigger Select', keys, info);
+    setCurrent_select_key(keys[0]);
+  };
+
+  const to_onDoubleClick = (keys, info) =>{
+    // console.log('Trigger Select', keys, info);
+    setCurrent_select_key(keys[0]);
+    window.open(info.url);
+  }
+  // const onExpand = (keys, info) => {
+  //   console.log('Trigger Expand', keys, info);
+  // };
+
+  //自定义treetitle展示
+  function titleRender({ title, key, isLeaf, parentId }) {
+    // console.log(title, key, isLeaf, parentId);
+    return (
+      <>
         <span>{title}</span>
-        {key != "1"?(
-          <MinusOutlined className='to_right'  onClick={() => { 
-            //业务的处理函数
-            //在这里处理拿到key 去处理一维数组，然后再转二维数组 ，再setState
-          }} />
-        ):""}
-        {isLeaf??(
-          <PlusOutlined className='to_right' onClick={() => { 
-            //业务的处理函数
-            //在这里处理拿到key 去处理一维数组，然后再转二维数组 ，再setState
-          }} />
+        {key != "1" ? (
+          <>
+            <Popconfirm
+              title="Xxxx"
+              description="Xxxxxxxxxx?"
+              onConfirm={(e) => {
+                setMarkData(
+                  markData.filter(
+                    (value) => value.key !== key && value.parentId !== key
+                  )
+                );
+              }}
+              onCancel={() => {}}
+              okText="Yes"
+              cancelText="No"
+            >
+              <MinusOutlined className="to_right" />
+            </Popconfirm>
+          </>
+        ) : (
+          ""
         )}
-        
-  
-        <EditOutlined className='to_right'/>
-  
-    </>
+        {isLeaf ?? (
+          <PlusOutlined
+            className="to_right"
+            onClick={() => {
+              //业务的处理函数
+              //在这里处理拿到key 去处理一维数组，然后再转二维数组 ，再setState
+              setOpenAddFolder_input("");
+              setCurrent_type("add");
+              setOpenAddFolder(true);
+            }}
+          />
+        )}
+
+        <EditOutlined
+          className="to_right"
+          onClick={() => {
+            setOpenAddFolder_input(title);
+            setCurrent_type("edit");
+            setOpenAddFolder(true);
+          }}
+        />
+      </>
+    );
   }
-     
-      return (
-        <>
+
+  const openAddFolder_handleOk = (v) => {
+    // console.log("v", v.target.value);
+    if (openAddFolder_input != "") {
+      //   let the_data = [...markData,   {
+      //     key: +new Date() + Math.random() + "",
+      //     title: openAddFolder_input,
+      //     parentId: current_select_key,
+      // },]
+      if (current_type === "add") {
+        // let the_data = [...markData];
+        // let index = -1;
+        // for(let i= 0; i< the_data.length;i++)
+        // {
+        //   if(current_select_key === the_data[i].key)
+        //   {
+        //     for(let j = i + 1; j <the_data.length; j++)
+        //     {
+        //       if(the_data[j].parentId !== current_select_key)
+        //       {
+        //         index = j;
+        //         break;
+        //       }
+        //     }
+        //     if(j != -1)
+        //     {
+        //       break;
+        //     }
+        //   }
+        // }
+
+        // if(index != -1)
+        // {
+
+        // }
+        setMarkData([
+          ...markData,
+          {
+            key: +new Date() + Math.random() + "",
+            title: openAddFolder_input,
+            parentId: current_select_key,
+          },
+        ]);
+      } else {
+        let the_data = [...markData];
+        the_data = the_data.map((v) => {
+          if (v.key === current_select_key) {
+            v.title = openAddFolder_input;
+          }
+          return v;
+        });
+        setMarkData(the_data);
+      }
+
+      // console.log("the_data", the_data);
+      // let a = +new Date() + Math.random() + "";
+      // console.log("a", a);
+    }
+
+    setOpenAddFolder(false);
+  };
+  const openAddFolder_handleCancel = () => {
+    setOpenAddFolder(false);
+  };
+
+  const openAddFolder_onChange = (v) => {
+    // console.log("v", v.target.value);
+    setOpenAddFolder_input(v.target.value);
+  };
+
+  const to_onDrop = (info) => {
+    // console.log("info", info);
+    const dropKey = info.node.key;
+    const dragKey = info.dragNode.key;
+    const dropPos = info.node.pos.split("-");
+    const dropPosition =
+      info.dropPosition - Number(dropPos[dropPos.length - 1]);
+    // console.log("dropKey", dropKey, dragKey, dropPos, dropPosition);
+    //root 拖拽不动
+    if (dropKey === "1" && dropPosition != 0) {
+      return;
+    }
+    let drag_data = [];
+    let index = -1;
+    let drop_data = {};
+    let the_data = [];
+
+    //两次循环保证顺序
+    for (let i = 0; i < markData.length; i++) {
+      if (dragKey === markData[i].key) {
+        drag_data.push(markData[i]);
+        break;
+      }
+    }
+    for (let i = 0; i < markData.length; i++) {
+      if (dragKey === markData[i].parentId) {
+        drag_data.push(markData[i]);
+      }
+    }
+    for (let i = 0; i < markData.length; i++) {
+      if (dragKey !== markData[i].parentId && dragKey !== markData[i].key) {
+        the_data.push(markData[i]);
+      }
+    }
+
+    for (let i = 0; i < the_data.length; i++) {
+      if (the_data[i].key === dropKey) {
+        index = i;
+        drop_data = the_data[i];
+        break;
+      }
+    }
+
+    // let the_data = [...markData];
+
+    if (index != -1) {
+      if (dropPosition == 0) {
+        drag_data[0].parentId = drop_data.key;
+        the_data.splice(index + 1, 0, ...drag_data);
+      } else if (dropPosition == 1) {
+        drag_data[0].parentId = drop_data.parentId;
+        the_data.splice(index + 1, 0, ...drag_data);
+      } else if (dropPosition == -1) {
+        drag_data[0].parentId = drop_data.parentId;
+        the_data.splice(index, 0, ...drag_data);
+      }
+
+      setMarkData(the_data);
+    }
+
+    // console.log("drag_data", drag_data, index);
+  };
+
+  const open_book = ()=>{
+    
+    // console.log("getCurrentPages", document.location.href, document.title);
+    setState_Drawer(true);
+  };
+
+
+  const to_star = ()=>{
+
+    // console.log("current_select_key", current_select_key);
+    let the_data = {};
+    for(let i=0; i<markData.length; i++) {
+      if(current_select_key === markData[i].key )
+      {
+        the_data = markData[i];
+        break;
+      }
+    }
+    // console.log("the_data === {}", Object.keys(the_data).length === 0);
+    
+    let a_data = {
+      key: +new Date() + Math.random() + "",
+      title: document.title,
+      parentId: current_select_key,
+      isLeaf:true,
+      url: document.location.href,
+    };
+    if(the_data.isLeaf)
+    {
+      a_data.parentId = the_data.parentId;
+    }
+    //修补删除后无法添加的bug
+    if(Object.keys(the_data).length === 0)
+    {
+      the_data = markData[0];
+      setCurrent_select_key("1");
+      a_data.parentId = "1";
+    }
+    
+    setMarkData([...markData, a_data]);
+  };
+
+
+  // const to_upload = () =>{
+
+  // };
+
+  const to_download = () =>{
+
+  };
+
+
+  // function xml_parse(input){
+  //   if(window.FileReader)
+  //   {
+  //     var file = input.files[0];
+  //     console.log("input", input);
+  //     console.log("file", file);
+  //     var reader = new FileReader();
+  //     reader.onload = function(event)
+  //     {
+  //       var dom = new DOMParser().parseFromString(event.target.result, "text/html");
+  //       console.log("dom", dom);
+  //     }
+  //     // reader.readAsText(file);
+  //   }
+  // }
+
+
+  // function xml_openSelectionBox(){
+  //   document.d
+  //   var inputObj = document.getElementById("my_inputObj");
+  //   if(!inputObj)
+  //   {
+  //     inputObj = document.createElement("input");
+  //     inputObj.setAttribute("id", "my_inputObj");
+  //     inputObj.setAttribute("type", "file");
+  //     inputObj.setAttribute("style", "visibility: hidden");
+  //     document.body.appendChild(inputObj);
+  //     inputObj.onchange = xml_parse(inputObj);
+  //   }
+    
+  //   inputObj.click();
+  //   inputObj.value;
+  //   console.log("inputObj.value", inputObj.value);
+  // }
+
+
+  const getTextInfo = (file)=>{
+    console.log("file", file);
+    let reader = new FileReader();
+    reader.readAsText(file);
+    reader.onload = (result) =>{
+      console.log("result", result.target.result);
+      const htmljson = toJSON(result.target.result);
+      console.log("htmljson", htmljson);
+    };
+    return false;
+  };
+
+  return (
+    <>
+      {/* <AddFolderModal  openAddFolder={openAddFolder}/> */}
+
+      <Modal
+        title="---"
+        open={openAddFolder}
+        onOk={openAddFolder_handleOk}
+        onCancel={openAddFolder_handleCancel}
+      >
+        <Input onChange={openAddFolder_onChange} value={openAddFolder_input} />
+      </Modal>
 
       <div className="Book-hide">
-                  <Button
-                    // type="primary"
-                    icon={<BookOutlined />}
-                    onClick={() => setState(true)}
-                    >
-                  </Button>
-        </div>
-     
-          <Drawer
-            // title="Basic Drawer"
-            placement={"bottom"}
-            // closable={false}
-            onClose={onClose}
-            open={state}
-            // key={placement}
-            extra={
-              <Space>
-                {/* <Button icon={<PlusSquareOutlined />}></Button> */}
-                <Button icon={<StarOutlined />}></Button>
-                <Button icon={<SettingOutlined />}></Button>
-              </Space>
-            }
-          >
-            <DirectoryTree
-              multiple={false}
-              defaultExpandAll
-              onSelect={onSelect}
-              // onExpand={onExpand}
-              treeData={returnTree(markData)}
-              titleRender={titleRender}
-              expandAction={false}
-            />
-          </Drawer>
-       
-  
-        </>
-      )
+        <Button
+          // type="primary"
+          icon={<BookOutlined />}
+          onClick={open_book}
+        ></Button>
+      </div>
+
+      <Drawer
+        // title="Basic Drawer"
+        placement={"bottom"}
+        // closable={false}
+        onClose={drawer_onClose}
+        open={state_Drawer}
+        // key={placement}
+        extra={
+          <Space>
+            {/* <Button icon={<PlusSquareOutlined />}></Button> */}
+            <Button icon={<StarOutlined />} onClick={to_star}></Button>
+            <Button icon={<SettingOutlined />}></Button>
+
+    
+            <Upload accept=".html" beforeUpload={getTextInfo} showUploadList={false}>
+              <Button icon={<UploadOutlined />} ></Button>
+            </Upload>
+
+            
+
+
+            <Button icon={<DownloadOutlined />} onClick={to_download} ></Button>
+          </Space>
+        }
+      >
+        <DirectoryTree
+          multiple={false}
+          defaultExpandAll
+          onSelect={onSelect}
+          // onExpand={onExpand}
+          onDoubleClick={to_onDoubleClick}
+          treeData={returnTree(markData)}
+          titleRender={titleRender}
+          expandAction={false}
+          draggable={{ icon: false }}
+          onDrop={to_onDrop}
+          // icon={false}
+        />
+      </Drawer>
+    </>
+  );
 }
