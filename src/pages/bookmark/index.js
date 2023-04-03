@@ -11,8 +11,9 @@ import {
   UploadOutlined,
   DownloadOutlined,
 } from "@ant-design/icons"; //PlusSquareOutlined
-import { Button, Drawer, Space, Tree, Modal, Input, Popconfirm, Upload} from "antd";
-import {toJSON} from "./components/tools";
+import { Button, Drawer, Space, Tree, Modal, Input, Popconfirm, Upload, List} from "antd";
+import {htmlSystem} from "./components/html";
+import {createHtmlTemp } from "./components/html_config"
 
 export default function BookMark(props) {
   const { DirectoryTree } = Tree;
@@ -27,7 +28,7 @@ export default function BookMark(props) {
     {
       key: "1",
       title: "root",
-      parentId: "0",
+      parentId: "-1",
       url: "",
     },
     {
@@ -60,7 +61,44 @@ export default function BookMark(props) {
       return tree;
     }
 
-    return recursionFun(arr, "0");
+    return recursionFun(arr, "-1");
+  }
+
+  // 多维数组转一维
+  //Object.keys(the_data).length === 0
+  function returnArr(tree, arr, id){
+    if(Array.isArray(tree))
+    {
+      for(let i =0;i<tree.length;i++){
+        let a = {...tree[i]};
+        a.key = a.id;
+        a.parentId = id;
+        if( !("title" in a))
+        {
+          a.title = a.name
+        }
+        if ("href" in a)
+        {
+          a.isLeaf = true;
+          a.url = a.href;
+          
+        }
+        if ("icon" in a)
+        {
+          delete a.icon;
+        }
+        let c = a.children;
+        delete a.children;
+        
+        arr.push(a);
+
+
+        returnArr(c, arr, a.id);
+
+        
+      }
+    }
+    
   }
 
   const onSelect = (keys, info) => {
@@ -70,8 +108,12 @@ export default function BookMark(props) {
 
   const to_onDoubleClick = (keys, info) =>{
     // console.log('Trigger Select', keys, info);
-    setCurrent_select_key(keys[0]);
-    window.open(info.url);
+    if (info.isLeaf)
+    {
+      setCurrent_select_key(keys[0]);
+      window.open(info.url);
+    }
+    
   }
   // const onExpand = (keys, info) => {
   //   console.log('Trigger Expand', keys, info);
@@ -133,37 +175,9 @@ export default function BookMark(props) {
   const openAddFolder_handleOk = (v) => {
     // console.log("v", v.target.value);
     if (openAddFolder_input != "") {
-      //   let the_data = [...markData,   {
-      //     key: +new Date() + Math.random() + "",
-      //     title: openAddFolder_input,
-      //     parentId: current_select_key,
-      // },]
+
       if (current_type === "add") {
-        // let the_data = [...markData];
-        // let index = -1;
-        // for(let i= 0; i< the_data.length;i++)
-        // {
-        //   if(current_select_key === the_data[i].key)
-        //   {
-        //     for(let j = i + 1; j <the_data.length; j++)
-        //     {
-        //       if(the_data[j].parentId !== current_select_key)
-        //       {
-        //         index = j;
-        //         break;
-        //       }
-        //     }
-        //     if(j != -1)
-        //     {
-        //       break;
-        //     }
-        //   }
-        // }
 
-        // if(index != -1)
-        // {
-
-        // }
         setMarkData([
           ...markData,
           {
@@ -309,55 +323,53 @@ export default function BookMark(props) {
 
   // };
 
+
+  function downloadFile(url, name = "bookmark.html") {
+    const link = document.createElement('a')
+    link.href = url
+    link.download = name
+    const _evt = new MouseEvent('click')
+    link.dispatchEvent(_evt)
+}
+
+function stringToBlobURL(fileString) {
+  return URL.createObjectURL(new Blob([fileString], { type: "application/octet-stream" }))
+}
+
+
+
+
   const to_download = () =>{
+    // recursionFun(arr, "-1")
+
+    const bookmarks = returnTree(markData);
+    // console.log("bookmarks", bookmarks);
+    const htmlStr = htmlSystem.initJSON(bookmarks)
+    console.log("htmlStr", htmlStr);
+    const htmlTemp = createHtmlTemp('bookmark')
+    const targetFile = stringToBlobURL(htmlTemp + htmlStr)
+    downloadFile(targetFile, 'bookmarks.html');
 
   };
 
 
-  // function xml_parse(input){
-  //   if(window.FileReader)
-  //   {
-  //     var file = input.files[0];
-  //     console.log("input", input);
-  //     console.log("file", file);
-  //     var reader = new FileReader();
-  //     reader.onload = function(event)
-  //     {
-  //       var dom = new DOMParser().parseFromString(event.target.result, "text/html");
-  //       console.log("dom", dom);
-  //     }
-  //     // reader.readAsText(file);
-  //   }
-  // }
-
-
-  // function xml_openSelectionBox(){
-  //   document.d
-  //   var inputObj = document.getElementById("my_inputObj");
-  //   if(!inputObj)
-  //   {
-  //     inputObj = document.createElement("input");
-  //     inputObj.setAttribute("id", "my_inputObj");
-  //     inputObj.setAttribute("type", "file");
-  //     inputObj.setAttribute("style", "visibility: hidden");
-  //     document.body.appendChild(inputObj);
-  //     inputObj.onchange = xml_parse(inputObj);
-  //   }
-    
-  //   inputObj.click();
-  //   inputObj.value;
-  //   console.log("inputObj.value", inputObj.value);
-  // }
-
 
   const getTextInfo = (file)=>{
-    console.log("file", file);
+    // console.log("file", file);
     let reader = new FileReader();
     reader.readAsText(file);
     reader.onload = (result) =>{
-      console.log("result", result.target.result);
-      const htmljson = toJSON(result.target.result);
-      console.log("htmljson", htmljson);
+      // console.log("result", result.target.result);
+      const htmljson  = htmlSystem.initHTML(result.target.result);
+      // console.log("htmljson", htmljson);
+      let arr = [];
+      returnArr(htmljson, arr, "-1");
+      // console.log("arr", arr);
+      // let arr2 = returnTree(arr)
+      // console.log("arr2", arr2);
+      // let markData = returnTree(markData);
+      // console.log("markData", markData);
+      setMarkData(arr);
     };
     return false;
   };
