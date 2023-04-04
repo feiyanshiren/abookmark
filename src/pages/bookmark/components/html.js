@@ -1,13 +1,4 @@
-/*
- * @Author: Hunter
- * @Date: 2022-03-12 13:48:04
- * @LastEditTime: 2022-12-05 23:31:03
- * @LastEditors: Hunter
- * @Description:
- * @FilePath: \book_mark_private\src\utils\html.ts
- * 可以输入预定的版权声明、个性签名、空行等
- */
-
+import { Zap } from "@geist-ui/icons"
 import { load } from "cheerio"
 import { createHtmlFolder, createHtmlFile, createBaseTemp } from "./html_config"
 export class HTMLSystem {
@@ -36,10 +27,139 @@ export class HTMLSystem {
    */
   initHTML(html) {
     const $ = load(html)
+    let dls = [];
+    $("dl").each((i, e)=>{
+      // console.log("i, e", i, e);
+      if(e.parent.name === "body")
+      {
+        dls.push(e);
+      }
+    });
+    console.log("dls", dls);
     const dl = $("dl").first()
     const dt = dl.children("dt").eq(0)
     return this.htmlToJson(dt, [])
   }
+
+  initHTML2(html){
+    const $ = load(html)
+    let dls = [];
+    $("dl").each((i, e)=>{
+      if(e.parent.name === "body")
+      {
+        dls.push(e);
+      }
+    });
+    console.log("dls", dls);
+    const dl = dls[0]
+    // console.log("dl", dl);
+    let new_arr = [];
+    this.htmlToJson2(dl, new_arr, "-1")
+    return new_arr;
+  }
+  
+ htmlToJson2(d, l, key){
+  if(!d)
+  {
+    return
+  }
+  // console.log("d", d, key)
+ 
+    if(d.name === "dl" || d.name === "dt")
+    {
+      for (let i = 0; i < d.children.length; i++)
+      {
+        if("name" in d.children[i])
+        {
+         
+          if(d.children[i].name === "dl")
+          {
+            // d.children[i].key = this.addCount().toString()
+            this.htmlToJson2(d.children[i], l, key)
+          }
+          else if(d.children[i].name === "dt")
+          {
+            // console.log("d.children[0]", d.children[0], key)
+            this.htmlToJson2(d.children[i], l, key)
+          }
+          else if(d.children[i].name === "h3")
+          {
+            // console.log("d.children[i]", d.children[i], key)
+            let a = {};
+            a.key = this.addCount().toString()
+            a.title = d.children[i].children[0].data
+            a.parentId = key
+            l.push(a);
+            key = a.key
+          }
+          else if(d.children[i].name === "a")
+          {
+            let a = {};
+              a.key = this.addCount().toString()
+              a.title = d.children[i].children[0].data
+              a.parentId = key
+              a.isLeaf = true
+              a.href= d.children[i].attribs.href
+              a.name = d.children[i].children[0].data
+              l.push(a);
+          }
+        }
+        
+      }
+    }
+
+  // }
+  
+  
+    // if(Array.isArray(d))
+    // {
+      
+    //   for(let i = 0; i < d.length; i)
+    //   {
+    //     // console.log("d.length", d.length)
+    //     if("name" in d[i])
+    //     {
+    //       if(d[i].name === "dl")
+    //       {
+    //         key = this.addCount().toString()
+    //         this.htmlToJson2(d[i].children, l, key);
+    //       }else if(d[i].name === "dt")
+    //       {
+
+    //         let h3 = d[i].children("h3").first().text() ?? "";
+    //         let name = d[i].children("a").first().text()  ?? "";
+    //         let href = d[i].children("a").first().attr("href")  ?? "";
+    //         if(h3 !== "")
+    //         {
+    //           let a = {};
+    //           a.key = this.addCount().toString()
+    //           a.title = h3;
+    //           a.parentId = key
+    //           l.push(a);
+    //         }
+    //         else if(name !== "")
+    //         {
+    //           let a = {};
+    //           a.key = this.addCount().toString()
+    //           a.title = h3;
+    //           a.parentId = key
+    //           a.isLeaf = true
+    //           a.href= href
+    //           a.name = name
+    //           l.push(a);
+    //         }
+    //       }
+
+          
+    //     }
+
+        
+    //     // l.push(a);
+    //   }
+    // }
+
+  }
+
 
   /**
    * @name:
@@ -74,7 +194,7 @@ export class HTMLSystem {
       case "folder":
         item.children = []
       case "file":
-        item.id = this.addCount().toString()
+        item.key = this.addCount().toString()
         list.push(item)
         break
     }
@@ -148,6 +268,7 @@ export class HTMLSystem {
     const root = this.createInitHtml(
       `<div id="root">${createBaseTemp()}</div>`
     )("#root")
+    console.log("root", root.children().toString());
     bookMarks.forEach(this.createElemChild(root.children().first()))
     return root.children().toString()
   }
@@ -201,7 +322,25 @@ export class HTMLSystem {
    * @return {*}
    */
   checkIsFileOrFolder = item =>
-    item.title ? "folder" : item.name ? "file" : "none"
+  {
+    if ("isLeaf" in item)
+    {
+      return "file";
+    }
+    else
+    {
+      if("name" in item)
+      {
+        return "file";
+      }
+      else
+      {
+        return "folder";
+      }
+    }
+  }
+    // item.title ? "folder" : item.name ? "file" : "none"
+    // item.isLeaf ? "file" : "folder"
 }
 
 export const htmlSystem = new HTMLSystem()

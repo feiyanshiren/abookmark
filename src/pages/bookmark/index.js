@@ -29,14 +29,14 @@ export default function BookMark(props) {
       key: "1",
       title: "root",
       parentId: "-1",
-      url: "",
     },
     {
       key: "2",
       title: "2",
       parentId: "1",
       isLeaf: true,
-      url: "",
+      href: "",
+      name: "2",
     },
   ];
 
@@ -66,13 +66,13 @@ export default function BookMark(props) {
 
   // 多维数组转一维
   //Object.keys(the_data).length === 0
-  function returnArr(tree, arr, id){
+  function returnArr(tree, arr, key){
     if(Array.isArray(tree))
     {
       for(let i =0;i<tree.length;i++){
         let a = {...tree[i]};
-        a.key = a.id;
-        a.parentId = id;
+        // a.key = a.id;
+        a.parentId = key;
         if( !("title" in a))
         {
           a.title = a.name
@@ -80,7 +80,7 @@ export default function BookMark(props) {
         if ("href" in a)
         {
           a.isLeaf = true;
-          a.url = a.href;
+          // a.url = a.href;
           
         }
         if ("icon" in a)
@@ -93,7 +93,7 @@ export default function BookMark(props) {
         arr.push(a);
 
 
-        returnArr(c, arr, a.id);
+        returnArr(c, arr, a.key);
 
         
       }
@@ -111,7 +111,7 @@ export default function BookMark(props) {
     if (info.isLeaf)
     {
       setCurrent_select_key(keys[0]);
-      window.open(info.url);
+      window.open(info.href);
     }
     
   }
@@ -125,7 +125,7 @@ export default function BookMark(props) {
     return (
       <>
         <span>{title}</span>
-        {key != "1" ? (
+        {parentId != "-1" ? (
           <>
             <Popconfirm
               title="Xxxx"
@@ -301,7 +301,8 @@ export default function BookMark(props) {
       title: document.title,
       parentId: current_select_key,
       isLeaf:true,
-      url: document.location.href,
+      // url: document.location.href,
+      href: document.location.href,
     };
     if(the_data.isLeaf)
     {
@@ -343,11 +344,13 @@ function stringToBlobURL(fileString) {
     // recursionFun(arr, "-1")
 
     const bookmarks = returnTree(markData);
-    // console.log("bookmarks", bookmarks);
+    console.log("bookmarks", bookmarks);
     const htmlStr = htmlSystem.initJSON(bookmarks)
     console.log("htmlStr", htmlStr);
     const htmlTemp = createHtmlTemp('bookmark')
+    // console.log("htmlTemp", htmlTemp);
     const targetFile = stringToBlobURL(htmlTemp + htmlStr)
+    // console.log("targetFile", targetFile);
     downloadFile(targetFile, 'bookmarks.html');
 
   };
@@ -360,16 +363,17 @@ function stringToBlobURL(fileString) {
     reader.readAsText(file);
     reader.onload = (result) =>{
       // console.log("result", result.target.result);
-      const htmljson  = htmlSystem.initHTML(result.target.result);
-      // console.log("htmljson", htmljson);
-      let arr = [];
-      returnArr(htmljson, arr, "-1");
+      // const htmljson  = htmlSystem.initHTML(result.target.result);
+      const htmljson  = htmlSystem.initHTML2(result.target.result);
+      console.log("htmljson", htmljson);
+      // let arr = [];
+      // returnArr(htmljson, arr, "-1");
       // console.log("arr", arr);
       // let arr2 = returnTree(arr)
       // console.log("arr2", arr2);
       // let markData = returnTree(markData);
       // console.log("markData", markData);
-      setMarkData(arr);
+      setMarkData(htmljson);
     };
     return false;
   };

@@ -19,7 +19,7 @@
   * @return {*}
   */
  export const createHtmlFolder = folder => `
- <DT/>
+ <DT>
  <H3 ADD_DATE="${folder.add_date}" LAST_MODIFIED="${folder.last_modified}">${
    folder.title
  }</H3>
@@ -32,7 +32,7 @@
   * @return {*}
   */
  export const createHtmlFile = file => `
- <DT/>
+ <DT>
  <A HREF="${file.href}" ICON="${file.icon}" ADD_DATE="${file.add_date}">${file.name}</A>
  `
  /**
