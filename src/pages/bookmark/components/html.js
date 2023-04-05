@@ -35,7 +35,7 @@ export class HTMLSystem {
         dls.push(e);
       }
     });
-    console.log("dls", dls);
+    // console.log("dls", dls);
     const dl = $("dl").first()
     const dt = dl.children("dt").eq(0)
     return this.htmlToJson(dt, [])
@@ -50,8 +50,8 @@ export class HTMLSystem {
         dls.push(e);
       }
     });
-    console.log("dls", dls);
-    console.log("dls.toString()", $("dl").first().toString());
+    // console.log("dls", dls);
+    // console.log("dls.toString()", $("dl").first().toString());
     const dl = dls[0]
     // console.log("dl", dl);
     let new_arr = [];
@@ -108,56 +108,6 @@ export class HTMLSystem {
         
       }
     }
-
-  // }
-  
-  
-    // if(Array.isArray(d))
-    // {
-      
-    //   for(let i = 0; i < d.length; i)
-    //   {
-    //     // console.log("d.length", d.length)
-    //     if("name" in d[i])
-    //     {
-    //       if(d[i].name === "dl")
-    //       {
-    //         key = this.addCount().toString()
-    //         this.htmlToJson2(d[i].children, l, key);
-    //       }else if(d[i].name === "dt")
-    //       {
-
-    //         let h3 = d[i].children("h3").first().text() ?? "";
-    //         let name = d[i].children("a").first().text()  ?? "";
-    //         let href = d[i].children("a").first().attr("href")  ?? "";
-    //         if(h3 !== "")
-    //         {
-    //           let a = {};
-    //           a.key = this.addCount().toString()
-    //           a.title = h3;
-    //           a.parentId = key
-    //           l.push(a);
-    //         }
-    //         else if(name !== "")
-    //         {
-    //           let a = {};
-    //           a.key = this.addCount().toString()
-    //           a.title = h3;
-    //           a.parentId = key
-    //           a.isLeaf = true
-    //           a.href= href
-    //           a.name = name
-    //           l.push(a);
-    //         }
-    //       }
-
-          
-    //     }
-
-        
-    //     // l.push(a);
-    //   }
-    // }
 
   }
 
@@ -267,7 +217,7 @@ export class HTMLSystem {
     opt = { xml: true, xmlMode: true },
     isDoc = false
   ) => {
-    const $ = load(temp, opt, isDoc)
+    const $ = load(temp, {}, isDoc)
     return $
   }
   /**
@@ -282,9 +232,20 @@ export class HTMLSystem {
     )("#root")
     // console.log("root.children().first()", root.children().first().toString())
     bookMarks.forEach(this.createElemChild(root.children().first()))
-    let s = root.children().toString().replaceAll("<DT/>", "<DT>")
-    s = s.replaceAll("<DL>", "\n<DL>")
-    s = s.replaceAll("</DL>", "\n</DL>")
+    console.log("root.children().toString()", root.children().toString())
+    let s = root.children().toString().replaceAll("<dt/>", "<dt>")
+    s = s.replaceAll("</dt>", "")
+    s = s.replaceAll("\n", "")
+    // s = s.replaceAll(" ", "")
+    // s = s.replace(/<dt>\n*/g, "")
+    s = s.replaceAll("<dl>", "\n<dl>\n")
+    s = s.replaceAll("</dl>", "\n</dl>")
+    s = s.replaceAll("<dt>", "\n<dt>")
+    s = s.replaceAll("dl", "DL")
+    s = s.replaceAll("dt", "DT")
+    s = s.replaceAll("a", "A")
+    s = s.replaceAll("href", "HREF")
+    s = s.replaceAll("h3", "H3")
     console.log("s", s)
     return s
   }

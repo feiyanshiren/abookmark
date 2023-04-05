@@ -35,7 +35,7 @@ export default function BookMark(props) {
       title: "2",
       parentId: "1",
       isLeaf: true,
-      href: "",
+      href: "HTTP://WWW.BAIDU.COM",
       name: "2",
     },
   ];
@@ -344,9 +344,9 @@ function stringToBlobURL(fileString) {
     // recursionFun(arr, "-1")
 
     const bookmarks = returnTree(markData);
-    console.log("bookmarks", bookmarks);
+    // console.log("bookmarks", bookmarks);
     const htmlStr = htmlSystem.initJSON(bookmarks)
-    console.log("htmlStr", htmlStr);
+    // console.log("htmlStr", htmlStr);
     const htmlTemp = createHtmlTemp('bookmark')
     // console.log("htmlTemp", htmlTemp);
     const targetFile = stringToBlobURL(htmlTemp + htmlStr)
@@ -365,7 +365,7 @@ function stringToBlobURL(fileString) {
       // console.log("result", result.target.result);
       // const htmljson  = htmlSystem.initHTML(result.target.result);
       const htmljson  = htmlSystem.initHTML2(result.target.result);
-      console.log("htmljson", htmljson);
+      // console.log("htmljson", htmljson);
       // let arr = [];
       // returnArr(htmljson, arr, "-1");
       // console.log("arr", arr);
