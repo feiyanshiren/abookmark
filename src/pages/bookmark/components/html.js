@@ -51,6 +51,7 @@ export class HTMLSystem {
       }
     });
     console.log("dls", dls);
+    console.log("dls.toString()", $("dl").first().toString());
     const dl = dls[0]
     // console.log("dl", dl);
     let new_arr = [];
@@ -242,6 +243,17 @@ export class HTMLSystem {
   initJSON(json) {
     return this.jsonToHtml(json)
   }
+
+  jsonToHtml2 = (bookMarks = []) => {
+    return (
+      <>
+        <dl>
+
+        </dl>
+      </>
+    )
+  }
+
   /**
    * @name:
    * @description: 生成新标签的CheerioAPI
@@ -268,9 +280,13 @@ export class HTMLSystem {
     const root = this.createInitHtml(
       `<div id="root">${createBaseTemp()}</div>`
     )("#root")
-    console.log("root", root.children().toString());
+    // console.log("root.children().first()", root.children().first().toString())
     bookMarks.forEach(this.createElemChild(root.children().first()))
-    return root.children().toString()
+    let s = root.children().toString().replaceAll("<DT/>", "<DT>")
+    s = s.replaceAll("<DL>", "\n<DL>")
+    s = s.replaceAll("</DL>", "\n</DL>")
+    console.log("s", s)
+    return s
   }
   /**
    * @name:

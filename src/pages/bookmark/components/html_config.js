@@ -5,9 +5,6 @@
  * @return {*}
  */
  export const createHtmlTemp = name => `<!DOCTYPE NETSCAPE-Bookmark-file-1>
- <!-- This is an automatically generated file.
-      It will be read and overwritten.
-      DO NOT EDIT! -->
  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
  <TITLE>${name}</TITLE>
  <H1>${name}</H1>
@@ -19,10 +16,7 @@
   * @return {*}
   */
  export const createHtmlFolder = folder => `
- <DT>
- <H3 ADD_DATE="${folder.add_date}" LAST_MODIFIED="${folder.last_modified}">${
-   folder.title
- }</H3>
+ <DT/><H3>${folder.title}</H3>
  ${createBaseTemp()}
  `
  /**
@@ -32,8 +26,7 @@
   * @return {*}
   */
  export const createHtmlFile = file => `
- <DT>
- <A HREF="${file.href}" ICON="${file.icon}" ADD_DATE="${file.add_date}">${file.name}</A>
+ <DT/><A HREF="${file.href}" >${file.name}</A>
  `
  /**
   * @name:
@@ -41,7 +34,7 @@
   * @return {*}
   */
  export const createBaseTemp = () => `
- <DL><p>
- </DL><p>
+ <DL>
+ </DL>
  `
  
