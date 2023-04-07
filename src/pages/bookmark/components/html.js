@@ -1,4 +1,4 @@
-import { Zap } from "@geist-ui/icons"
+// import { Zap } from "@geist-ui/icons"
 import { load } from "cheerio"
 import { createHtmlFolder, createHtmlFile, createBaseTemp } from "./html_config"
 export class HTMLSystem {
@@ -232,7 +232,7 @@ export class HTMLSystem {
     )("#root")
     // console.log("root.children().first()", root.children().first().toString())
     bookMarks.forEach(this.createElemChild(root.children().first()))
-    console.log("root.children().toString()", root.children().toString())
+    // console.log("root.children().toString()", root.children().toString())
     let s = root.children().toString().replaceAll("<dt/>", "<dt>")
     s = s.replaceAll("</dt>", "")
     s = s.replaceAll("\n", "")
@@ -246,7 +246,7 @@ export class HTMLSystem {
     s = s.replaceAll("a", "A")
     s = s.replaceAll("href", "HREF")
     s = s.replaceAll("h3", "H3")
-    console.log("s", s)
+    // console.log("s", s)
     return s
   }
   /**

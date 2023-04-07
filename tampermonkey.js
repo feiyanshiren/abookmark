@@ -1,11 +1,13 @@
 // ==UserScript==
 // @name         abookmark
-// @namespace    http://tampermonkey.net/
+// @namespace    abookmark
 // @version      0.0.1
-// @description  try to take over the world!
-// @author
+// @description  abookmark
+// @author       sanyeshu
 // @match        https://*/*
 // @match        http://*/*
+// @grant        GM_xmlhttpRequest
+// @connect      *
 
 // ==/UserScript==
 

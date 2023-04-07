@@ -3,6 +3,6 @@ import ReactDOM from 'react-dom'
 import App from './app'
 
 const bookApp = document.createElement('div')
-bookApp.id = 'bookApp-abookmark-85591'
+bookApp.id = 'abookmark'
 document.body.appendChild(bookApp)
 ReactDOM.render(<App />, bookApp)

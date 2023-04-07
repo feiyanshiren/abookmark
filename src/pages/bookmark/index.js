@@ -14,6 +14,8 @@ import {
 import { Button, Drawer, Space, Tree, Modal, Input, Popconfirm, Upload, List} from "antd";
 import {htmlSystem} from "./components/html";
 import {createHtmlTemp } from "./components/html_config"
+import {webdav} from "./components/tools"
+
 
 export default function BookMark(props) {
   const { DirectoryTree } = Tree;
@@ -22,6 +24,9 @@ export default function BookMark(props) {
   const [openAddFolder_input, setOpenAddFolder_input] = useState("");
   const [current_select_key, setCurrent_select_key] = useState("1");
   const [current_type, setCurrent_type] = useState("add");
+  const [open_webdav, setOpen_webdav] = useState(false)
+  const [webdav_username, setWebdav_username] = useState("")
+  const [webdav_password, setWebdav_password] = useState("")
 
   //默认一维数组
   const statictreedata = [
@@ -171,6 +176,37 @@ export default function BookMark(props) {
       </>
     );
   }
+//feiyanshiren@163.com
+//av7bj52dnxkuutsx
+  const open_webdav_handleOk = async (v) => {
+
+
+
+
+    // console.log("v", webdav_username, webdav_password)
+    webdav.ExistsFile("YueDu/vcards_20230107_134557.vcf").then(
+          async r => {
+              console.log("r", r)
+          }
+        )
+    // console.log("a", a)
+    // const client = createClient(
+    //   "https://dav.jianguoyun.com/dav/",
+    //   {
+    //     username: "feiyanshiren@163.com",
+    //     password: "av7bj52dnxkuutsx",
+    //     headers:{"Access-Control-Allow-Headers": "X-Requested-With, Tenant-Id, Blade-Auth, Content-Type, Authorization, credential, X-XSRF-TOKEN, token, username, client",
+    //   "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS,HEAD",
+    //   "Access-Control-Allow-Origin": "*",
+    //   "Access-Control-Expose-Headers": "*",
+    //   "Access-Control-Max-Age": "18000L",
+    //   "Access-Control-Allow-Credentials": "true",
+    //   },
+    //   }
+    // )
+    // const directoryItems = await client.getDirectoryContents("/YueDu");
+    // console.log("directoryItems", directoryItems)
+  }
 
   const openAddFolder_handleOk = (v) => {
     // console.log("v", v.target.value);
@@ -208,9 +244,23 @@ export default function BookMark(props) {
     setOpenAddFolder(false);
   };
 
+  const open_webdav_handleCancel = () => {
+    setOpen_webdav(false);
+  };
+
   const openAddFolder_onChange = (v) => {
     // console.log("v", v.target.value);
     setOpenAddFolder_input(v.target.value);
+  };
+
+  const webdav_username_onChange = (v) => {
+    // console.log("v", v.target.value);
+    setWebdav_username(v.target.value);
+  };
+
+  const webdav_password_onChange = (v) => {
+    // console.log("v", v.target.value);
+    setWebdav_password(v.target.value);
   };
 
   const to_onDrop = (info) => {
@@ -383,6 +433,16 @@ function stringToBlobURL(fileString) {
       {/* <AddFolderModal  openAddFolder={openAddFolder}/> */}
 
       <Modal
+        title="webdav"
+        open={open_webdav}
+        onOk={open_webdav_handleOk}
+        onCancel={open_webdav_handleCancel}
+      >
+        <Input onChange={webdav_username_onChange} value={webdav_username} placeholder="username" />
+        <Input.Password onChange={webdav_password_onChange} value={webdav_password} placeholder="password"/>
+      </Modal>
+
+      <Modal
         title="---"
         open={openAddFolder}
         onOk={openAddFolder_handleOk}
@@ -410,7 +470,9 @@ function stringToBlobURL(fileString) {
           <Space>
             {/* <Button icon={<PlusSquareOutlined />}></Button> */}
             <Button icon={<StarOutlined />} onClick={to_star}></Button>
-            <Button icon={<SettingOutlined />}></Button>
+            <Button icon={<SettingOutlined />} onClick={()=>{
+              setOpen_webdav(true)
+            }}></Button>
 
     
             <Upload accept=".html" beforeUpload={getTextInfo} showUploadList={false}>
