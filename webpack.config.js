@@ -3,7 +3,8 @@ const { merge } = require('webpack-merge')
 const base = require('./webpack.config.base')
 
 module.exports = merge(base, {
-  mode: process.env.NODE_ENV || 'production',
+  // mode: process.env.NODE_ENV || 'production',
+  mode: "development",
   devtool: 'source-map',
   output: {
     filename: '[name].bundle.js',
@@ -31,4 +32,8 @@ module.exports = merge(base, {
       template: './public/index.html',
     }),
   ],
+
+  // externals: {
+  //   'antd': '*',
+  // },
 })

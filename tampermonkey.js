@@ -8,6 +8,8 @@
 // @match        http://*/*
 // @grant        GM_xmlhttpRequest
 // @connect      *
+// @grant        GM_setValue
+// @grant        GM_getValue
 
 // ==/UserScript==
 

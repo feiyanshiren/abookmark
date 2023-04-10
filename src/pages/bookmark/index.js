@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react"; // useEffect, useRef
+import { useState } from "react";
 import "./index.less";
 import {
   BookOutlined,
@@ -10,12 +10,21 @@ import {
   EditOutlined,
   UploadOutlined,
   DownloadOutlined,
-} from "@ant-design/icons"; //PlusSquareOutlined
-import { Button, Drawer, Space, Tree, Modal, Input, Popconfirm, Upload, List} from "antd";
-import {htmlSystem} from "./components/html";
-import {createHtmlTemp } from "./components/html_config"
-import {webdav} from "./components/tools"
-
+} from "@ant-design/icons"; 
+import {
+  Button,
+  Drawer,
+  Space,
+  Tree,
+  Modal,
+  Input,
+  Popconfirm,
+  Upload,
+  List,
+} from "antd";
+import { htmlSystem } from "./components/html";
+import { createHtmlTemp } from "./components/html_config";
+import { webdav } from "./components/tools";
 
 export default function BookMark(props) {
   const { DirectoryTree } = Tree;
@@ -24,9 +33,10 @@ export default function BookMark(props) {
   const [openAddFolder_input, setOpenAddFolder_input] = useState("");
   const [current_select_key, setCurrent_select_key] = useState("1");
   const [current_type, setCurrent_type] = useState("add");
-  const [open_webdav, setOpen_webdav] = useState(false)
-  const [webdav_username, setWebdav_username] = useState("")
-  const [webdav_password, setWebdav_password] = useState("")
+  const [open_webdav, setOpen_webdav] = useState(false);
+  const [webdav_username, setWebdav_username] = useState("");
+  const [webdav_password, setWebdav_password] = useState("");
+  const [webdav_url, setWebdav_url] = useState("");
 
   //默认一维数组
   const statictreedata = [
@@ -71,39 +81,30 @@ export default function BookMark(props) {
 
   // 多维数组转一维
   //Object.keys(the_data).length === 0
-  function returnArr(tree, arr, key){
-    if(Array.isArray(tree))
-    {
-      for(let i =0;i<tree.length;i++){
-        let a = {...tree[i]};
+  function returnArr(tree, arr, key) {
+    if (Array.isArray(tree)) {
+      for (let i = 0; i < tree.length; i++) {
+        let a = { ...tree[i] };
         // a.key = a.id;
         a.parentId = key;
-        if( !("title" in a))
-        {
-          a.title = a.name
+        if (!("title" in a)) {
+          a.title = a.name;
         }
-        if ("href" in a)
-        {
+        if ("href" in a) {
           a.isLeaf = true;
           // a.url = a.href;
-          
         }
-        if ("icon" in a)
-        {
+        if ("icon" in a) {
           delete a.icon;
         }
         let c = a.children;
         delete a.children;
-        
+
         arr.push(a);
 
-
         returnArr(c, arr, a.key);
-
-        
       }
     }
-    
   }
 
   const onSelect = (keys, info) => {
@@ -111,18 +112,13 @@ export default function BookMark(props) {
     setCurrent_select_key(keys[0]);
   };
 
-  const to_onDoubleClick = (keys, info) =>{
+  const to_onDoubleClick = (keys, info) => {
     // console.log('Trigger Select', keys, info);
-    if (info.isLeaf)
-    {
+    if (info.isLeaf) {
       setCurrent_select_key(keys[0]);
       window.open(info.href);
     }
-    
-  }
-  // const onExpand = (keys, info) => {
-  //   console.log('Trigger Expand', keys, info);
-  // };
+  };
 
   //自定义treetitle展示
   function titleRender({ title, key, isLeaf, parentId }) {
@@ -176,44 +172,18 @@ export default function BookMark(props) {
       </>
     );
   }
-//feiyanshiren@163.com
-//av7bj52dnxkuutsx
+
   const open_webdav_handleOk = async (v) => {
-
-
-
-
     // console.log("v", webdav_username, webdav_password)
-    webdav.ExistsFile("YueDu/vcards_20230107_134557.vcf").then(
-          async r => {
-              console.log("r", r)
-          }
-        )
-    // console.log("a", a)
-    // const client = createClient(
-    //   "https://dav.jianguoyun.com/dav/",
-    //   {
-    //     username: "feiyanshiren@163.com",
-    //     password: "av7bj52dnxkuutsx",
-    //     headers:{"Access-Control-Allow-Headers": "X-Requested-With, Tenant-Id, Blade-Auth, Content-Type, Authorization, credential, X-XSRF-TOKEN, token, username, client",
-    //   "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS,HEAD",
-    //   "Access-Control-Allow-Origin": "*",
-    //   "Access-Control-Expose-Headers": "*",
-    //   "Access-Control-Max-Age": "18000L",
-    //   "Access-Control-Allow-Credentials": "true",
-    //   },
-    //   }
-    // )
-    // const directoryItems = await client.getDirectoryContents("/YueDu");
-    // console.log("directoryItems", directoryItems)
-  }
+    webdav.ExistsFile("YueDu/vcards_20230107_134557.vcf").then(async (r) => {
+      console.log("r", r);
+    });
+  };
 
   const openAddFolder_handleOk = (v) => {
     // console.log("v", v.target.value);
     if (openAddFolder_input != "") {
-
       if (current_type === "add") {
-
         setMarkData([
           ...markData,
           {
@@ -233,9 +203,6 @@ export default function BookMark(props) {
         setMarkData(the_data);
       }
 
-      // console.log("the_data", the_data);
-      // let a = +new Date() + Math.random() + "";
-      // console.log("a", a);
     }
 
     setOpenAddFolder(false);
@@ -257,6 +224,12 @@ export default function BookMark(props) {
     // console.log("v", v.target.value);
     setWebdav_username(v.target.value);
   };
+
+  const webdav_url_onChange = (v) => {
+    // console.log("v", v.target.value);
+    setWebdav_url(v.target.value);
+  };
+  
 
   const webdav_password_onChange = (v) => {
     // console.log("v", v.target.value);
@@ -326,103 +299,81 @@ export default function BookMark(props) {
     // console.log("drag_data", drag_data, index);
   };
 
-  const open_book = ()=>{
-    
+  const open_book = () => {
     // console.log("getCurrentPages", document.location.href, document.title);
     setState_Drawer(true);
   };
 
-
-  const to_star = ()=>{
-
+  const to_star = () => {
     // console.log("current_select_key", current_select_key);
     let the_data = {};
-    for(let i=0; i<markData.length; i++) {
-      if(current_select_key === markData[i].key )
-      {
+    for (let i = 0; i < markData.length; i++) {
+      if (current_select_key === markData[i].key) {
         the_data = markData[i];
         break;
       }
     }
     // console.log("the_data === {}", Object.keys(the_data).length === 0);
-    
+
     let a_data = {
       key: +new Date() + Math.random() + "",
       title: document.title,
       parentId: current_select_key,
-      isLeaf:true,
+      isLeaf: true,
       // url: document.location.href,
       href: document.location.href,
     };
-    if(the_data.isLeaf)
-    {
+    if (the_data.isLeaf) {
       a_data.parentId = the_data.parentId;
     }
     //修补删除后无法添加的bug
-    if(Object.keys(the_data).length === 0)
-    {
+    if (Object.keys(the_data).length === 0) {
       the_data = markData[0];
       setCurrent_select_key("1");
       a_data.parentId = "1";
     }
-    
-    setMarkData([...markData, a_data]);
-  };
 
+    setMarkData([a_data, ...markData]);
+  };
 
   // const to_upload = () =>{
 
   // };
 
-
   function downloadFile(url, name = "bookmark.html") {
-    const link = document.createElement('a')
-    link.href = url
-    link.download = name
-    const _evt = new MouseEvent('click')
-    link.dispatchEvent(_evt)
-}
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = name;
+    const _evt = new MouseEvent("click");
+    link.dispatchEvent(_evt);
+  }
 
-function stringToBlobURL(fileString) {
-  return URL.createObjectURL(new Blob([fileString], { type: "application/octet-stream" }))
-}
+  function stringToBlobURL(fileString) {
+    return URL.createObjectURL(
+      new Blob([fileString], { type: "application/octet-stream" })
+    );
+  }
 
-
-
-
-  const to_download = () =>{
+  const to_download = () => {
     // recursionFun(arr, "-1")
 
     const bookmarks = returnTree(markData);
     // console.log("bookmarks", bookmarks);
-    const htmlStr = htmlSystem.initJSON(bookmarks)
+    const htmlStr = htmlSystem.initJSON(bookmarks);
     // console.log("htmlStr", htmlStr);
-    const htmlTemp = createHtmlTemp('bookmark')
+    const htmlTemp = createHtmlTemp("bookmark");
     // console.log("htmlTemp", htmlTemp);
-    const targetFile = stringToBlobURL(htmlTemp + htmlStr)
+    const targetFile = stringToBlobURL(htmlTemp + htmlStr);
     // console.log("targetFile", targetFile);
-    downloadFile(targetFile, 'bookmarks.html');
-
+    downloadFile(targetFile, "bookmarks.html");
   };
 
-
-
-  const getTextInfo = (file)=>{
-    // console.log("file", file);
+  const getTextInfo = (file) => {
     let reader = new FileReader();
     reader.readAsText(file);
-    reader.onload = (result) =>{
-      // console.log("result", result.target.result);
-      // const htmljson  = htmlSystem.initHTML(result.target.result);
-      const htmljson  = htmlSystem.initHTML2(result.target.result);
-      // console.log("htmljson", htmljson);
-      // let arr = [];
-      // returnArr(htmljson, arr, "-1");
-      // console.log("arr", arr);
-      // let arr2 = returnTree(arr)
-      // console.log("arr2", arr2);
-      // let markData = returnTree(markData);
-      // console.log("markData", markData);
+    reader.onload = (result) => {
+      const htmljson = htmlSystem.initHTML2(result.target.result);
+
       setMarkData(htmljson);
     };
     return false;
@@ -430,16 +381,27 @@ function stringToBlobURL(fileString) {
 
   return (
     <>
-      {/* <AddFolderModal  openAddFolder={openAddFolder}/> */}
-
       <Modal
         title="webdav"
         open={open_webdav}
         onOk={open_webdav_handleOk}
         onCancel={open_webdav_handleCancel}
       >
-        <Input onChange={webdav_username_onChange} value={webdav_username} placeholder="username" />
-        <Input.Password onChange={webdav_password_onChange} value={webdav_password} placeholder="password"/>
+        <Input
+          onChange={webdav_url_onChange}
+          value={webdav_url}
+          placeholder="url"
+        />
+        <Input
+          onChange={webdav_username_onChange}
+          value={webdav_username}
+          placeholder="username"
+        />
+        <Input.Password
+          onChange={webdav_password_onChange}
+          value={webdav_password}
+          placeholder="password"
+        />
       </Modal>
 
       <Modal
@@ -470,24 +432,28 @@ function stringToBlobURL(fileString) {
           <Space>
             {/* <Button icon={<PlusSquareOutlined />}></Button> */}
             <Button icon={<StarOutlined />} onClick={to_star}></Button>
-            <Button icon={<SettingOutlined />} onClick={()=>{
-              setOpen_webdav(true)
-            }}></Button>
+            <Button
+              icon={<SettingOutlined />}
+              onClick={() => {
+                setOpen_webdav(true);
+              }}
+            ></Button>
 
-    
-            <Upload accept=".html" beforeUpload={getTextInfo} showUploadList={false}>
-              <Button icon={<UploadOutlined />} ></Button>
+            <Upload
+              accept=".html"
+              beforeUpload={getTextInfo}
+              showUploadList={false}
+            >
+              <Button icon={<UploadOutlined />}></Button>
             </Upload>
 
-            
-
-
-            <Button icon={<DownloadOutlined />} onClick={to_download} ></Button>
+            <Button icon={<DownloadOutlined />} onClick={to_download}></Button>
           </Space>
         }
       >
         <DirectoryTree
           multiple={false}
+          // autoExpandParent = {true}
           defaultExpandAll
           onSelect={onSelect}
           // onExpand={onExpand}
