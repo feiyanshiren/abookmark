@@ -10,6 +10,8 @@
 // @connect      *
 // @grant        GM_setValue
 // @grant        GM_getValue
+// @require https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js
+
 
 // ==/UserScript==
 

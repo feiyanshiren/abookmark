@@ -1,5 +1,13 @@
 // import { Zap } from "@geist-ui/icons"
-import { load } from "cheerio";
+// import { load } from "cheerio"
+// import { load } from "react-native-cheerio"
+// import cheerio from "cheerio-without-node-native"
+// const cheerio = require("cheerio")
+// cheerio = require('cheerio-without-node-native');
+const cheerio = require('react-native-cheerio');
+// const cheerio = window.cheerio;
+// const cheerio = require("../src/lib/bundle.js");
+// import cheerio from 'https://cdn.skypack.dev/cheerio';
 import {
   createHtmlFolder,
   createHtmlFile,
@@ -26,7 +34,8 @@ export class HTMLSystem {
 
 
   initHTML2(html) {
-    const $ = load(html);
+    // const $ = load(html);
+    const $ = cheerio.load(html);
     let dls = [];
     $("dl").each((i, e) => {
       if (e.parent.name === "body") {
@@ -157,7 +166,8 @@ export class HTMLSystem {
     opt = { xml: true, xmlMode: true },
     isDoc = false
   ) => {
-    const $ = load(temp, {}, isDoc);
+    // const $ = load(temp, {}, isDoc);
+    const $ = cheerio.load(temp, {}, isDoc);
     return $;
   };
   /**

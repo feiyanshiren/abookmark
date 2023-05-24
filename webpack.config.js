@@ -31,9 +31,24 @@ module.exports = merge(base, {
     new HtmlWebpackPlugin({
       template: './public/index.html',
     }),
+
   ],
 
-  // externals: {
-  //   'antd': '*',
-  // },
+  externals: {
+    "react": "React",
+    "react-dom": "ReactDOM",
+    'antd': 'antd',
+    '@ant-design/icons': 'icons',
+    // 'cheerio': 'window',
+    // "cheerio": "Cheerio",
+    // "react-native-cheerio": "window",
+    // 'jquery': 'jQuery',
+  },
+
+//   resolve: {
+//     fallback: {
+//       util: require.resolve("util/")
+//     }
+// },
+
 })

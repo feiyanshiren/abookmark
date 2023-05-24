@@ -14,8 +14,10 @@
     "antd": "^5.2.1",
     "babel-loader": "8.3.0",
     "cheerio": "^1.0.0-rc.12",
+    "jquery": "^3.7.0",
     "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "react-native-cheerio": "^1.0.0-rc.4"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "7.18.6",
