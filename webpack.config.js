@@ -3,8 +3,8 @@ const { merge } = require('webpack-merge')
 const base = require('./webpack.config.base')
 
 module.exports = merge(base, {
-  // mode: process.env.NODE_ENV || 'production',
-  mode: "development",
+  mode: process.env.NODE_ENV || 'production',
+  // mode: "development",
   devtool: 'source-map',
   output: {
     filename: '[name].bundle.js',
@@ -35,10 +35,10 @@ module.exports = merge(base, {
   ],
 
   externals: {
-    "react": "React",
-    "react-dom": "ReactDOM",
-    'antd': 'antd',
-    '@ant-design/icons': 'icons',
+    // "react": "React",
+    // "react-dom": "ReactDOM",
+    // 'antd': 'antd',
+    // '@ant-design/icons': 'icons',
     // 'cheerio': 'window',
     // "cheerio": "Cheerio",
     // "react-native-cheerio": "window",
