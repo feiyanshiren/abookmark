@@ -1,8 +1,8 @@
 
 export const webdav = {
-    Account: "feiyanshiren@163.com",
-    Password: "av7bj52dnxkuutsx",
-    // Password: "amzmqgabhvzmrsxb",
+    Account: "",
+    Password: "",
+
     NewFolder: function (FolderName) {
         let url = `https://dav.jianguoyun.com/dav/${FolderName}/`
         let type = "MKCOL"
